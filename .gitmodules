@@ -9,4 +9,4 @@
 	url = https://github.com/daijifeng001/caffe-mnc.git
 [submodule "externals/selective_search_py"]
 	path = externals/selective_search_py
-	url = https://github.com/belltailjp/selective_search_py.git
+	url = https://github.com/romyny/selective_search_py.git

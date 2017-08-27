@@ -45,8 +45,52 @@ Those datasets were use train model over CNN nets: AlexNet, ZF & VGG16. We have 
 
 ## Prerequisites:
 
+  1. Caffe (rel. caffe-faster-rcnn & caffe-segm) [prerequisites](http://caffe.berkeleyvision.org/installation.html#prequequisites)
+  2. Python's packages (requirements.txt)
+
 ## Installation:
 
+To install this project, please follow the steps below:
+
+1. [Install OpenCV](http://www.pyimagesearch.com/2016/10/24/ubuntu-16-04-how-to-install-opencv/)
+
+2. Download the repository:
+
+    ```
+    $ cd /opt
+    $ sudo git clone --recursive https://github.com/romyny/segm_cfm.git
+    $ cd segm_cfm
+    ```
+3. Install all externals repositories required:
+
+    ```
+    $ cd /externals/caffe-segm
+    ```
+    
+    Adjust Makefile.config, then
+    
+    ```
+    $ sudo mkdir build
+    $ cd build
+    $ cmake ..
+    $ make -j4
+    $ make install
+    $ cd ../..
+    ```
+    
+    Install selective_search tool. Prequequisites: [Boost.NumPy](https://github.com/ndarray/Boost.NumPy)
+    
+    ```
+    $ cd /externals/selective_search_py
+    $ wget http://cs.brown.edu/~pff/segment/segment.zip; unzip segment.zip; rm segment.zip
+    $ mkdir build
+    $ cd build
+    $ cmake..
+    $ make -j 4
+    ```
+    Note: if you face any trouble please have a look [here](https://github.com/belltailjp/selective_search_py)
+    
+    
 ## Experiments:
 
 ## Our results
