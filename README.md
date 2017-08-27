@@ -8,7 +8,7 @@ Created by Romuald FOTSO
 
 CFM, which stands for Convolutional Feature Masking. This project is an attempt to implement the segmentation approach [**Convolutional Feature Masking for Joint Object and Stuff Segmentation**](https://arxiv.org/abs/1412.1283)). In the paper, they propose to use shape information via masking convolutional features. The CNN features are masked out from the convolutional maps and used to train classifiers for recognition. We have setup an end-end framework suitable for data pre-processing, training, test, evalutation and visualization. There are several proposals involved in this project: Selective Search, Multiscale Combinatorial Group ([**MCG**](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/mcg/resources/MCG_CVPR2014.pdf)) and Convolutional Oriented Boundaries ([**COB**](http://arxiv.org/abs/1701.04658)).
 
-![example](data/readme_img/example1.png)
+![example](data/readme_img/example11.png)
 
 
 ## Purposes:
@@ -307,7 +307,7 @@ WARNING: be aware that some commands above are time consuming & high computing h
 
 All result related to demo dataset will be saved at '/opt/segm_cfm/data/demo/out'
 
-![example](data/readme_img/example2.png)
+![example](data/readme_img/example22.png)
 
 ## Contact
 
