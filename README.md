@@ -8,6 +8,8 @@ Created by Romuald FOTSO
 
 CFM, which stands for Convolutional Feature Masking. This project is an attempt to implement the segmentation approach [**Convolutional Feature Masking for Joint Object and Stuff Segmentation**](https://arxiv.org/abs/1412.1283)). In the paper, they propose to use shape information via masking convolutional features. The CNN features are masked out from the convolutional maps and used to train classifiers for recognition. We have setup an end-end framework suitable for data pre-processing, training, test, evalutation and visualization. There are several proposals involved in this project: Selective Search, Multiscale Combinatorial Group ([**MCG**](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/mcg/resources/MCG_CVPR2014.pdf)) and Convolutional Oriented Boundaries ([**COB**](http://arxiv.org/abs/1701.04658)).
 
+![example](data/readme_img/example1.png)
+
 
 ## Purposes:
 
@@ -27,7 +29,7 @@ Our main goals are:
 
 ## Datasets:
 
-We have use the VOC2012 dataset, parsed as SBD (Semantic Boundaries Dataset). In addition, we also the MCG and COB proposals related.
+We have used the VOC2012 dataset, parsed as SBD (Semantic Boundaries Dataset). In addition, we also used the MCG and COB proposals related.
 Required files are available here:
   * [SBD (VOC2012): train+val (12031 images)](http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/semantic_contours/benchmark.tgz)
   * [SBD (VOC2012): train+val (12031 MCG proposals)](https://data.vision.ee.ethz.ch/jpont/mcg/MCG-SBD-trainval-proposals.tgz)
@@ -89,7 +91,7 @@ To install this project, please follow the steps below:
     $ make -j 4
     $ cd ../..
     ```
-    Note: if you face any trouble please have a look here [selective_search for python 2.7](https://github.com/romyny/selective_search_py)
+    Note: if you face any troubles please have a look here [selective_search for python 2.7](https://github.com/romyny/selective_search_py)
     
     Install project's libs
     
@@ -114,7 +116,8 @@ Get the data and models required:
   * (optional) SEGM-RAW: [Google Drive]() -> data/SEGM-RAW
   * (optional) MCG-RAW.parsed: [Google Drive]() -> data/MCG-RAW.parsed
   * (optional) SS-RAW.parsed: [Google Drive]() -> data/SS-RAW.parsed
-    Note: the optional files aboves can be built in the expirements steps
+
+  Note: the optional files aboves can be built in the expirements steps
 
 2. Download the models and uncompress in '/opt/segm_cfm/data/models'
   * bvlc_alexnet.caffemodel: [Google Drive]()
@@ -126,7 +129,7 @@ Get the data and models required:
 
 ## Experiments:
 
-WARNING: be aware that some commands above are time & ressouce consuming.
+WARNING: be aware that some commands above are time consuming & high computing hardware.
 
 1. Parse the groundtruth data (from pascal_voc segmentation format):
 
@@ -301,6 +304,10 @@ WARNING: be aware that some commands above are time & ressouce consuming.
     For help use the command: python tools/demo.py --help
 
 ## Our results
+
+All result related to demo dataset will be saved at '/opt/segm_cfm/data/demo/out'
+
+![example](data/readme_img/example2.png)
 
 ## Contact
 
