@@ -1,0 +1,528 @@
+name: "AlexNet_CFM_T2"
+input: "data"
+input_shape {
+  dim: 1
+  dim: 3
+  dim: 227
+  dim: 227
+}
+input: "rois"
+input_shape {
+  dim: 1
+  dim: 5
+}
+input: "masks"
+input_shape {
+  dim: 1
+  dim: 1
+  dim: 14
+  dim: 14
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "norm1"
+  type: "LRN"
+  bottom: "conv1"
+  top: "norm1"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "norm1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "pool1"
+  top: "conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "norm2"
+  type: "LRN"
+  bottom: "conv2"
+  top: "norm2"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "norm2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "pool2"
+  top: "conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu3"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "conv3"
+  top: "conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu4"
+  type: "ReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+layer {
+  name: "conv5"
+  type: "Convolution"
+  bottom: "conv4"
+  top: "conv5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu5"
+  type: "ReLU"
+  bottom: "conv5"
+  top: "conv5"
+}
+# ~~~~~~~ CFM: bboxes ~~~~~~~
+#layer {
+#  name: 'conv5_rois_1'
+#  type: 'ROIPooling'
+#  bottom: 'rois'
+#  bottom: 'conv5'
+#  top: 'conv5_rois_1'
+#  roi_pooling_param {
+#    pooled_w: 7
+#    pooled_h: 7
+#    spatial_scale: 0.061666667 # conv5/input = 74/1200 = 0.061666667
+#  }
+#}
+layer {
+  name: 'conv5_rois_1'
+  type: 'Python'
+  bottom: 'rois'
+  bottom: 'conv5'
+  top: 'conv5_rois_1'
+  python_param {
+    module: 'cfm.layers.ROIPooling'
+    layer: 'ROIPooling'
+    param_str: "{'pooled_w': 7, 'pooled_h':7, 'spatial_scale': 0.061666667}"
+  }
+}
+layer {
+  name: "fc6_b"
+  type: "InnerProduct"
+  bottom: "conv5_rois_1"
+  top: "fc6_b"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu6"
+  type: "ReLU"
+  bottom: "fc6_b"
+  top: "fc6_b"
+}
+layer {
+  name: "drop6"
+  type: "Dropout"
+  bottom: "fc6_b"
+  top: "fc6_b"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc7_b"
+  type: "InnerProduct"
+  bottom: "fc6_b"
+  top: "fc7_b"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu7"
+  type: "ReLU"
+  bottom: "fc7_b"
+  top: "fc7_b"
+}
+layer {
+  name: "drop7"
+  type: "Dropout"
+  bottom: "fc7_b"
+  top: "fc7_b"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+#~~~~~~~ CFM: masks ~~~~~~~
+#layer {
+#  name: 'conv5_rois_2'
+#  type: 'ROIPooling'
+#  bottom: 'rois'
+#  bottom: 'conv5'
+#  top: 'conv5_rois_2'
+#  roi_pooling_param {
+#    pooled_w: 13
+#    pooled_h: 13
+#    spatial_scale: 0.061666667 # conv5/input = 74/1200 = 0.061666667
+#  }
+#}
+layer {
+  name: 'conv5_rois_2'
+  type: 'Python'
+  bottom: 'rois'
+  bottom: 'conv5'
+  top: 'conv5_rois_2'
+  python_param {
+    module: 'cfm.layers.ROIPooling'
+    layer: 'ROIPooling'
+    param_str: "{'pooled_w': 13, 'pooled_h':13, 'spatial_scale': 0.061666667}"
+  }
+}
+layer {
+  name: 'conv5_masks'
+  type: 'Python'
+  bottom: 'rois'
+  bottom: 'masks'
+  bottom: 'conv5_rois_2'  
+  top: 'conv5_masks'
+  python_param {
+    module: 'cfm.layers.MaskPooling'
+    layer: 'MaskPooling'
+    param_str: "{'pooled_w': 13, 'pooled_h':13, 'spatial_scale': 0.061666667}"
+  }
+}
+layer {
+  name: "conv5_masks_pool"
+  type: "Pooling"
+  bottom: "conv5_masks"
+  top: "conv5_masks_pool"
+  pooling_param {
+    kernel_size: 2
+    stride: 2
+    pad: 0
+    pool: MAX
+  }
+}
+layer {
+  name: "fc6_s"
+  type: "InnerProduct"
+  bottom: "conv5_masks_pool"
+  top: "fc6_s"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu6"
+  type: "ReLU"
+  bottom: "fc6_s"
+  top: "fc6_s"
+}
+layer {
+  name: "drop6"
+  type: "Dropout"
+  bottom: "fc6_s"
+  top: "fc6_s"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc7_s"
+  type: "InnerProduct"
+  bottom: "fc6_s"
+  top: "fc7_s"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu7"
+  type: "ReLU"
+  bottom: "fc7_s"
+  top: "fc7_s"
+}
+layer {
+  name: "drop7"
+  type: "Dropout"
+  bottom: "fc7_s"
+  top: "fc7_s"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+# ~~~~~~~ concat: masks+bbxes ~~~~~~~
+layer{
+  name: "concat"
+  type: "Concat"
+  bottom: "fc7_b"
+  bottom: "fc7_s"
+  top: "fc7_concat"
+  concat_param {
+    axis: 1
+  }
+}
+# ~~~~~~~ Bbox classification ~~~~~~~
+layer {
+  name: "bbox_score"
+  type: "InnerProduct"
+  bottom: "fc7_concat"
+  top: "bbox_score"
+  inner_product_param {
+    num_output: 21 # pascal_cls
+  }
+}
+layer {
+  name: "bbox_prob"
+  type: "Softmax"
+  bottom: "bbox_score"
+  top: "bbox_prob"
+  loss_param {
+    ignore_label: -1
+    normalize: true
+  }
+}
+# ~~~~~~~ Bbox prediction ~~~~~~~
+layer {
+  name: "bbox_pred"
+  type: "InnerProduct"
+  bottom: "fc7_concat"
+  top: "bbox_pred"
+  inner_product_param {
+    num_output: 84 # 21*4
+  }
+}
+# ~~~~~~~ Mask classification ~~~~~~~
+layer {
+  name: "mask_score"
+  type: "InnerProduct"
+  bottom: "fc7_concat"
+  top: "mask_score"
+  inner_product_param {
+    num_output: 21 # pascal_cls 
+  }
+}
+layer {
+  name: "mask_cls_prob"
+  type: "Softmax"
+  bottom: "mask_score"
+  top: "mask_cls_prob"
+  loss_param {
+    ignore_label: -1
+    normalize: true
+  }
+}

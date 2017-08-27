@@ -1,0 +1,14 @@
+train_net: "models/AlexNet/AlexNet_CFM_T2_train.prototxt"
+base_lr: 0.001
+lr_policy: "step"
+gamma: 0.1
+stepsize: 20000
+display: 20
+average_loss: 100
+momentum: 0.9
+weight_decay: 0.0005
+# We disable standard caffe solver snapshotting and implement our own snapshot
+# function
+snapshot: 0
+snapshot_prefix: "AlexNet_segm_cfm_T2"
+iter_size: 2
