@@ -19,7 +19,7 @@ Our main goals are:
   * Implement a data generator et layers required to load segments/masks in Convolutional Network.
   * Implement key layers involved CFM approach: ROIPooling & MaskPooling.
   * Perform some post-processing (mask weighing & voting) required for the mask rendering.
-  * Test the CFM approach over 4 types of network config: 
+  * Test the CFM approach over 4 types of network configs: 
      *  T1 (bbox cls + mask cls)
      *  T2 (bbox cls + mask cls + bbox pred)
      *  T3 (bbox cls + mask cls + bbox pred + mask pred) => our own layers
@@ -87,11 +87,218 @@ To install this project, please follow the steps below:
     $ cd build
     $ cmake..
     $ make -j 4
+    $ cd ../..
     ```
-    Note: if you face any trouble please have a look [here](https://github.com/belltailjp/selective_search_py)
+    Note: if you face any trouble please have a look here [selective_search for python 2.7](https://github.com/romyny/selective_search_py)
     
+    Install project's libs
     
+    ```
+    $ cd libs
+    $ make
+    $ cd ..
+    ```
+    
+4. Install python's packages required:
+
+    ```
+    for req in $(cat requirements.txt); do pip install $req; done
+    ```
+    
+Get the data and models required:
+1. Download the data and uncompress in '/opt/segm_cfm/data'
+  * voc_2012: [PASCAL](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar) -> data/voc_2012
+  * bsd_voc2012: [BSD](http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/semantic_contours/benchmark.tgz) -> data/bsd_voc2012
+  * MCG proposals: [MCG-RAW](https://data.vision.ee.ethz.ch/jpont/mcg/MCG-SBD-trainval-proposals.tgz) -> data/MCG-RAW.init
+  * COB proposals: [COB-RAW](https://data.vision.ee.ethz.ch/kmaninis/share/COB/Precomputed/COB-SBD-trainval-proposals.tgz) -> data/COB-RAW.init
+  * (optional) SEGM-RAW: [Google Drive]() -> data/SEGM-RAW
+  * (optional) MCG-RAW.parsed: [Google Drive]() -> data/MCG-RAW.parsed
+  * (optional) SS-RAW.parsed: [Google Drive]() -> data/SS-RAW.parsed
+    Note: the optional files aboves can be built in the expirements steps
+
+2. Download the models and uncompress in '/opt/segm_cfm/data/models'
+  * bvlc_alexnet.caffemodel: [Google Drive]()
+  * bvlc_alexnet.caffemodel: [Google Drive]()
+  * AlexNet_segm_cfm_T3_iter_30000.caffemodel: [Google Drive]()
+  * AlexNet_segm_cfm_T4_iter_30000.caffemodel: [Google Drive]()
+  * VGG16_segm_cfm_T3_iter_30000.caffemodel: [Google Drive]()
+  * VGG16_segm_cfm_T4_iter_30000.caffemodel: [Google Drive]()
+
 ## Experiments:
+
+WARNING: be aware that some commands above are time & ressouce consuming.
+
+1. Parse the groundtruth data (from pascal_voc segmentation format):
+
+    ```
+    $ cd /opt/segm_cfm
+    $ python tools/parse_segm_data.py --dataset voc_2012 \ 
+      --gt_set trainval --in_seg_cls data/voc_2012/SegmentationClass \ 
+      --in_seg_inst data/voc_2012/SegmentationObject --num_proc 4 \ 
+      --out_seg_dir data/sbd_voc2012/SEGM-RAW
+    ```
+    For help use the command: python tools/parse_segm_data.py --help
+    
+2. Parse the groundtruth data (from bsd segmentation format):
+
+    ```
+    $ cd /opt/segm_cfm
+    
+    $ python tools/parse_gt_data.py --dataset bsd_voc2012 \ 
+      --gt_set train --in_seg_cls data/bsd_voc2012/cls \ 
+      --in_seg_inst data/bsd_voc2012/inst --num_proc 4 \ 
+      --out_seg_dir data/bsd_voc2012/SEGM-RAW
+      
+    $ python tools/parse_gt_data.py --dataset bsd_voc2012 \ 
+      --gt_set val --in_seg_cls data/bsd_voc2012/cls \ 
+      --in_seg_inst data/bsd_voc2012/inst --num_proc 4 \ 
+      --out_seg_dir data/bsd_voc2012/SEGM-RAW
+    ```
+    For help use the command: python tools/parse_gt_data.py --help
+
+3. Parse the proposals so that they can be easily handled by our project:
+
+    ```
+    $ cd /opt/segm_cfm
+    
+    $ python tools/parse_pr_data.py --dataset bsd_voc2012 \
+      --gt_set train --in_pr_dir data/bsd_voc2012/MCG-RAW.init \
+      --pr_meth mcg --top_k 1000 --num_proc 4 \
+      --out_pr_dir data/bsd_voc2012/MCG-RAW.parsed
+      
+    Let's generate also MCG proposals for demo dataset
+      
+    $ python tools/parse_pr_data.py --dataset demo \
+      --gt_set test --in_pr_dir data/bsd_voc2012/MCG-RAW.init \
+      --pr_meth mcg --top_k 1000 --num_proc 4 \
+      --out_pr_dir data/demo/MCG-RAW.parsed
+    ```
+    For help use the command: python tools/parse_pr_data.py --help
+    
+4. (Optional) Generate 'selective_search' proposals:
+
+    ```
+    $ cd /opt/segm_cfm
+    
+    $ python tools/generate_data.py --dataset bsd_voc2012 \ 
+      --gt_set train --pr_meth selective_search --num_proc 4 \ 
+      --mode accurate --output_im data/bsd_voc2012/SS-IMG \ 
+      --data MASK --output_mat data/bsd_voc2012/SS-RAW
+      
+    $ python tools/generate_data.py --dataset bsd_voc2012 \ 
+      --gt_set train --pr_meth selective_search --num_proc 4 \ 
+      --mode accurate --output_im data/bsd_voc2012/SS-IMG \ 
+      --data MAT --output_mat data/bsd_voc2012/SS-RAW
+      
+    Let do same for demo dataset
+      
+    $ python tools/generate_data.py --dataset demo \ 
+      --gt_set test --pr_meth selective_search --num_proc 4 \ 
+      --mode accurate --output_im data/demo/SS-IMG \ 
+      --data MASK --output_mat data/demo/SS-RAW
+      
+    $ python tools/generate_data.py --dataset demo \ 
+      --gt_set test --pr_meth selective_search --num_proc 4 \ 
+      --mode accurate --output_im data/demo/SS-IMG \ 
+      --data MAT --output_mat data/demo/SS-RAW
+    ```
+    For help use the command: python tools/generate_data.py --help
+
+5. Training: bsd_voc2012, AlexNet, selective_search | MCG
+
+    ```
+    $ cd /opt/segm_cfm
+    
+    Using selective_search proposals
+    
+    $ python tools/train_net.py --gpu_id 0 --dataset bsd_voc2012 \
+      --gt_set train --task CFM --solver models/AlexNet/solver_CFM_T{1|2|3|4}.prototxt \
+      --weights pretrained/AlexNet/bvlc_alexnet.caffemodel \
+      --in_gt_dir data/bsd_voc2012/SEGM-RAW \
+      --in_pr_dir data/bsd_voc2012/SS-RAW.parsed \
+      --iters 30000 --cache_im_dir cache/bsd_voc2012_train_ss
+      
+    Using MCG proposals
+    
+    $ python tools/train_net.py --gpu_id 0 --dataset bsd_voc2012 \
+      --gt_set train --task CFM --solver models/AlexNet/solver_CFM_T{1|2|3|4}.prototxt \
+      --weights pretrained/AlexNet/bvlc_alexnet.caffemodel \
+      --in_gt_dir data/bsd_voc2012/SEGM-RAW \
+      --in_pr_dir data/bsd_voc2012/MCG-RAW.parsed \
+      --iters 30000 --cache_im_dir cache/bsd_voc2012_train_mcg
+    ```
+    For help use the command: python tools/train_net.py --help
+    
+6. Training: bsd_voc2012, VGG16, selective_search | MCG
+
+    ```
+    $ cd /opt/segm_cfm
+    
+    Using selective_search proposals
+    
+    $ python tools/train_net.py --gpu_id 0 --dataset bsd_voc2012 \
+      --gt_set train --task CFM --solver models/VGG16/solver_CFM_T{1|2|3|4}.prototxt \
+      --weights pretrained/VGG16/VGG16.v2.caffemodel \
+      --in_gt_dir data/bsd_voc2012/SEGM-RAW \
+      --in_pr_dir data/bsd_voc2012/MCG-RAW.parsed \
+      --iters 30000 --cache_im_dir cache/bsd_voc2012_train_ss
+      
+    Using MCG proposals
+    
+    $ python tools/train_net.py --gpu_id 0 --dataset bsd_voc2012 \
+      --gt_set train --task CFM --solver models/VGG16/solver_CFM_T{1|2|3|4}.prototxt \
+      --weights pretrained/VGG16/VGG16.v2.caffemodel \
+      --in_gt_dir data/bsd_voc2012/SEGM-RAW \
+      --in_pr_dir data/bsd_voc2012/MCG-RAW.parsed \
+      --iters 30000 --cache_im_dir cache/bsd_voc2012_train_mcg
+    ```
+    For help use the command: python tools/train_net.py --help
+    
+7. Testing: demo, T4, AlexNet, selective_search | MCG
+
+    ```
+    $ cd /opt/segm_cfm
+    
+    Using selective_search proposals
+    
+    $ python tools/demo.py --gpu_id 0 --net AlexNet \
+      --gt_set test --task CFM --dataset demo \
+      --proto models/AlexNet/AlexNet_CFM_T4_test.prototxt \
+      --weights outputs/bsd_voc2012/train_mcg/AlexNet_segm_cfm_T4_iter_30000.caffemodel \
+      --in_pr_dir data/demo/SS-RAW.parsed --kwargs 'cfm_t:T4'
+      
+    Using MCG proposals
+    
+    $ python tools/demo.py --gpu_id 0 --net AlexNet \
+      --gt_set test --task CFM --dataset demo \
+      --proto models/AlexNet/AlexNet_CFM_T4_test.prototxt \
+      --weights outputs/bsd_voc2012/train_mcg/AlexNet_segm_cfm_T4_iter_30000.caffemodel \
+      --in_pr_dir data/demo/MCG-RAW.parsed --kwargs 'cfm_t:T4'
+    ```
+    For help use the command: python tools/demo.py --help
+
+8. Testing: demo, VGG16, T4, selective_search | MCG
+
+    ```
+    $ cd /opt/segm_cfm
+    
+    Using selective_search proposals
+    
+    $ python tools/demo.py --gpu_id 0 --net VGG16 \
+      --gt_set test --task CFM --dataset demo \
+      --proto models/VGG16/VGG16_CFM_T4_test.prototxt \
+      --weights outputs/bsd_voc2012/train_mcg/VGG16_segm_cfm_T4_iter_10000.caffemodel \
+      --in_pr_dir data/demo/SS-RAW.parsed --kwargs 'cfm_t:T4'
+      
+    Using MCG proposals
+    
+    $ python tools/demo.py --gpu_id 0 --net VGG16 \
+      --gt_set test --task CFM --dataset demo \
+      --proto models/VGG16/VGG16_CFM_T4_test.prototxt \
+      --weights outputs/bsd_voc2012/train_mcg/VGG16_segm_cfm_T4_iter_10000.caffemodel \
+      --in_pr_dir data/demo/MCG-RAW.parsed --kwargs 'cfm_t:T4'
+    ```
+    For help use the command: python tools/demo.py --help
 
 ## Our results
 
