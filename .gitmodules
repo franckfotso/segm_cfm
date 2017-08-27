@@ -1,3 +1,9 @@
 [submodule "externals/caffe-fast-rcnn"]
 	path = externals/caffe-fast-rcnn
 	url = https://github.com/rbgirshick/caffe-fast-rcnn.git
+[submodule "externals/caffe-mnc"]
+	path = externals/caffe-mnc
+	url = https://github.com/daijifeng001/caffe-mnc.git
+[submodule "externals/caffe-segm"]
+	path = externals/caffe-segm
+	url = https://github.com/daijifeng001/caffe-mnc.git

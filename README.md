@@ -36,11 +36,10 @@ Required files are available here:
 Those datasets were use train model over CNN nets: AlexNet, ZF & VGG16. We have explored many CNN nets in the way to see how flexible this approach is. Futhermore, we have provide all prototxt required so that you can test this project in a wide range of Nvidia GPU card ( > 2 Gb)
 
 ## Hardwares/Softwares:
-
-OS: Ubuntu 16.04 64 bit
+    OS: Ubuntu 16.04 64 bit
     GPU: Nvidia GTX 950M 4G
     Cuda 8.0
-    CuDNN 4.0.7
+    CuDNN 3.0.8
     Python 2.7.12
     OpenCV 3.1.0
 

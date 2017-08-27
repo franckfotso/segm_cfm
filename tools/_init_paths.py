@@ -8,8 +8,7 @@ def add_path(path):
 this_dir = osp.dirname(__file__)
 
 # Add caffe to PYTHONPATH
-caffe_path = osp.join(this_dir, '..', 'externals','caffe-mnc', 'python')
-#caffe_path = osp.join(this_dir, '..', 'externals','caffe-fast-rcnn', 'python')
+caffe_path = osp.join(this_dir, '..', 'externals','caffe-segm', 'python')
 add_path(caffe_path)
 
 # Add selective_search to PYTHONPATH
