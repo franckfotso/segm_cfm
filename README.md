@@ -6,7 +6,7 @@ Created by Romuald FOTSO
 
 ## Introduction:
 
-CFM, which stands for Convolutional Feature Masking. This project is an attempt to implement the segmentation approach [**Convolutional Feature Masking for Joint Object and Stuff Segmentation**](https://arxiv.org/abs/1412.1283)). In the paper, they propose to use shape information via masking convolutional features. The CNN features are masked out from the convolutional maps and used to train classifiers for recognition. We have setup an end-end framework suitable for data pre-processing, training, test, evalutation and visualization. There are several proposals involved in this project: Selective Search, Multiscale Combinatorial Group ([**MCG**](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/mcg/resources/MCG_CVPR2014.pdf)) and Convolutional Oriented Boundaries ([**COB**](http://arxiv.org/abs/1701.04658)).
+CFM, which stands for Convolutional Feature Masking. This project is an attempt to implement the segmentation approach [**Convolutional Feature Masking for Joint Object and Stuff Segmentation**](https://arxiv.org/abs/1412.1283)). In the paper, they propose to use the shape information via masking convolutional features. The CNN features are masked out from the convolutional maps and used to train classifiers for recognition. We have setup an end-end framework suitable for data pre-processing, training, test, evalutation and visualization. There are several proposals involved in this project: Selective Search, Multiscale Combinatorial Group ([**MCG**](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/mcg/resources/MCG_CVPR2014.pdf)) and Convolutional Oriented Boundaries ([**COB**](http://arxiv.org/abs/1701.04658)).
 
 ![example](data/readme_img/example11.png)
 
@@ -15,11 +15,11 @@ CFM, which stands for Convolutional Feature Masking. This project is an attempt 
 
 Our main goals are:
   * Propose a framework to handle a custom dataset for a segmentation task
-  * Propose a framework to handle a range bounding boxes or segments proposals such as Selective search, MCG or COB.
+  * Propose a framework to handle a range of bounding boxes / segments proposals such as Selective search, MCG or COB.
   * Extract segments & rois from VOC Pascal Segmentation schema (if there is no SBD data).
   * Generate selective search proposals (segments & rois) from images set.
-  * Implement a data generator et layers required to load segments/masks in Convolutional Network.
-  * Implement key layers involved CFM approach: ROIPooling & MaskPooling.
+  * Implement a data generator and layers required to load segments/masks in Convolutional Network (AlexNet/ZF/VGG16).
+  * Implement key layers involved in CFM approach: ROIPooling & MaskPooling.
   * Perform some post-processing (mask weighing & voting) required for the mask rendering.
   * Test the CFM approach over 4 types of network configs: 
      *  T1 (bbox cls + mask cls)
@@ -35,7 +35,7 @@ Required files are available here:
   * [SBD (VOC2012): train+val (12031 MCG proposals)](https://data.vision.ee.ethz.ch/jpont/mcg/MCG-SBD-trainval-proposals.tgz)
   * [SBD (VOC2012): train+val (12031 COB proposals)](https://data.vision.ee.ethz.ch/kmaninis/share/COB/Precomputed/COB-SBD-trainval-proposals.tgz)
 
-Those datasets were use train model over CNN nets: AlexNet, ZF & VGG16. We have explored many CNN nets in the way to see how flexible this approach is. Futhermore, we have provide all prototxt required so that you can test this project in a wide range of Nvidia GPU card ( > 2 Gb)
+Those datasets were used to train model over CNN nets: AlexNet, ZF & VGG16. We have explored many CNN nets in the way to see how flexible this approach is. Futhermore, we have provided all prototxt required so that you can test this project in a wide range of Nvidia GPU card ( > 2 Gb)
 
 ## Hardwares/Softwares:
     OS: Ubuntu 16.04 64 bit
@@ -91,7 +91,7 @@ To install this project, please follow the steps below:
     $ make -j 4
     $ cd ../..
     ```
-    Note: if you face any troubles please have a look here [selective_search for python 2.7](https://github.com/romyny/selective_search_py)
+    Note: if you face any troubles, please have a look here [selective_search for python 2.7](https://github.com/romyny/selective_search_py)
     
     Install project's libs
     
@@ -113,23 +113,18 @@ Get the data and models required:
   * bsd_voc2012: [BSD](http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/semantic_contours/benchmark.tgz) -> data/bsd_voc2012
   * MCG proposals: [MCG-RAW](https://data.vision.ee.ethz.ch/jpont/mcg/MCG-SBD-trainval-proposals.tgz) -> data/MCG-RAW.init
   * COB proposals: [COB-RAW](https://data.vision.ee.ethz.ch/kmaninis/share/COB/Precomputed/COB-SBD-trainval-proposals.tgz) -> data/COB-RAW.init
-  * (optional) SEGM-RAW: [Google Drive]() -> data/SEGM-RAW
-  * (optional) MCG-RAW.parsed: [Google Drive]() -> data/MCG-RAW.parsed
-  * (optional) SS-RAW.parsed: [Google Drive]() -> data/SS-RAW.parsed
-
-  Note: the optional files aboves can be built in the expirements steps
 
 2. Download the models and uncompress in '/opt/segm_cfm/data/models'
-  * bvlc_alexnet.caffemodel: [Google Drive]()
-  * bvlc_alexnet.caffemodel: [Google Drive]()
-  * AlexNet_segm_cfm_T3_iter_30000.caffemodel: [Google Drive]()
-  * AlexNet_segm_cfm_T4_iter_30000.caffemodel: [Google Drive]()
-  * VGG16_segm_cfm_T3_iter_30000.caffemodel: [Google Drive]()
-  * VGG16_segm_cfm_T4_iter_30000.caffemodel: [Google Drive]()
+  * bvlc_alexnet.caffemodel: [Google Drive](https://drive.google.com/open?id=0B_Rjj_NgCayPNU1FZ1VaTWJjQW8)
+  * VGG16.v2.caffemodel: [Google Drive](https://drive.google.com/open?id=0B_Rjj_NgCayPa1ZpVEtqSERkNUk)
+  * AlexNet_segm_cfm_T3_iter_30000.caffemodel: coming soon
+  * AlexNet_segm_cfm_T4_iter_30000.caffemodel: [Google Drive](https://drive.google.com/open?id=0B_Rjj_NgCayPMEQ1ekVJOThLLXM)
+  * VGG16_segm_cfm_T3_iter_30000.caffemodel: coming soon
+  * VGG16_segm_cfm_T4_iter_30000.caffemodel: [Google Drive](https://drive.google.com/open?id=0B_Rjj_NgCayPUktpWDZYdURaQkk)
 
 ## Experiments:
 
-WARNING: be aware that some commands above are time consuming & high computing hardware.
+WARNING: Be aware that some commands above are time consuming & high computing.
 
 1. Parse the groundtruth data (from pascal_voc segmentation format):
 
@@ -193,7 +188,7 @@ WARNING: be aware that some commands above are time consuming & high computing h
       --mode accurate --output_im data/bsd_voc2012/SS-IMG \ 
       --data MAT --output_mat data/bsd_voc2012/SS-RAW
       
-    Let do same for demo dataset
+    Let's do the same for the demo dataset
       
     $ python tools/generate_data.py --dataset demo \ 
       --gt_set test --pr_meth selective_search --num_proc 4 \ 
@@ -290,7 +285,7 @@ WARNING: be aware that some commands above are time consuming & high computing h
     $ python tools/demo.py --gpu_id 0 --net VGG16 \
       --gt_set test --task CFM --dataset demo \
       --proto models/VGG16/VGG16_CFM_T4_test.prototxt \
-      --weights outputs/bsd_voc2012/train_mcg/VGG16_segm_cfm_T4_iter_10000.caffemodel \
+      --weights outputs/bsd_voc2012/train_mcg/VGG16_segm_cfm_T4_iter_30000.caffemodel \
       --in_pr_dir data/demo/SS-RAW.parsed --kwargs 'cfm_t:T4'
       
     Using MCG proposals
@@ -298,14 +293,14 @@ WARNING: be aware that some commands above are time consuming & high computing h
     $ python tools/demo.py --gpu_id 0 --net VGG16 \
       --gt_set test --task CFM --dataset demo \
       --proto models/VGG16/VGG16_CFM_T4_test.prototxt \
-      --weights outputs/bsd_voc2012/train_mcg/VGG16_segm_cfm_T4_iter_10000.caffemodel \
+      --weights outputs/bsd_voc2012/train_mcg/VGG16_segm_cfm_T4_iter_30000.caffemodel \
       --in_pr_dir data/demo/MCG-RAW.parsed --kwargs 'cfm_t:T4'
     ```
     For help use the command: python tools/demo.py --help
 
 ## Our results
 
-All result related to demo dataset will be saved at '/opt/segm_cfm/data/demo/out'
+All results related to demo dataset will be saved at '/opt/segm_cfm/data/demo/out'
 
 ![example](data/readme_img/example22.png)
 
