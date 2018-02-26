@@ -2,7 +2,7 @@
 
 Implementation of Convolutional Feature Masking (CFM)
 
-Created by Romuald FOTSO
+Created by Franck FOTSO
 
 ## Introduction:
 
@@ -60,7 +60,7 @@ To install this project, please follow the steps below:
 
     ```
     $ cd /opt
-    $ sudo git clone --recursive https://github.com/romyny/segm_cfm.git
+    $ sudo git clone --recursive https://github.com/franckfotso/segm_cfm.git
     $ cd segm_cfm
     ```
 3. Install all externals repositories required:
@@ -91,7 +91,7 @@ To install this project, please follow the steps below:
     $ make -j 4
     $ cd ../..
     ```
-    Note: if you face any troubles, please have a look here [selective_search for python 2.7](https://github.com/romyny/selective_search_py)
+    Note: if you face any troubles, please have a look here [selective_search for python 2.7](https://github.com/franckfotso/selective_search_py)
     
     Install project's libs
     
@@ -306,4 +306,4 @@ All results related to demo dataset will be saved at '/opt/segm_cfm/data/demo/ou
 
 ## Contact
 
-Please feel free to leave suggestions or comments to Romuald FOTSO (romyny9096@gmail.com)
+Please feel free to leave suggestions or comments to Franck FOTSO (romyny9096@gmail.com)
